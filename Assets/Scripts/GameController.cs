@@ -11,45 +11,41 @@ namespace Game
 {
     public class GameController : MonoBehaviour
     {
+        //Инициализация всего говна которое мне нужно(Знаю что пишется через большое кол-во классов, но я тупой)(ФИКСИ ЭТО АЛО ЕВГЕНИЙ)
         public Image Up;
         public Image Down;
         public Image Left;
         public Image Right;
+        public Image panel;
+        public Image ErrorAim;
+        public Text Bonus;
         public Text Numbers;
         public Text Title;
-        public Image panel;
         
+        //Инициализация всех переменных
         private int _random;
-        private float nextActionTime = 1f;
-        private float period = 1f;
-        
         private float _gameTime;
         private int TimeLeft = -1;
-        public int TimeToStart = 3;
-
-        public float _vertical;
-        public float _horizontal;
-
+        private int TimeToStart = 3;
         private int _score = 0;
-        
+        private int _bonus = 1;
+        private int _howManyTrue = 0;
+        private int _howManyFalse = 0;
+
         void Update()
         {
-            _vertical = Input.GetAxis("Vertical");
-            _horizontal = Input.GetAxis("Horizontal");
-            
-            if (TimeToStart >= 0)
+            if (TimeToStart >= 0)                            //Счетчик до начала игры 3... 2... 1...
             {
                 _gameTime += 1 * Time.deltaTime;
                 if (_gameTime >= 1)
                 {
-                    Debug.Log(TimeToStart);
                     Numbers.text = TimeToStart.ToString();
                     TimeToStart -= 1;
                     _gameTime = 0;
                 }
             }
 
-            if (TimeToStart == -1)
+            if (TimeToStart == -1)                          //Когда началась игра(инициализация всего чего надо)
             {
                 
                 Numbers.gameObject.SetActive(false);
@@ -60,7 +56,30 @@ namespace Game
                 StartGame();
             }
 
-            if (TimeLeft > 0)
+            if (_howManyTrue == 3 && _bonus < 16)
+            {
+                _bonus *= 2;
+                Bonus.text = "x" + _bonus;
+                _howManyTrue = 0;
+            }
+
+            if (_howManyFalse == 2 && _bonus >= 1)
+            {
+                _bonus /= 2;
+                Bonus.text = "x" + _bonus;
+                _howManyFalse = 0;
+            }
+
+            if (_bonus == 0)
+            {
+                panel.gameObject.SetActive(true);
+                Up.gameObject.SetActive(false);
+                Down.gameObject.SetActive(false);
+                Left.gameObject.SetActive(false);
+                Right.gameObject.SetActive(false);
+                TimeLeft = -1;
+            }
+            if (TimeLeft > 0)                         //Таймер (2 секунды) за которое нужно что то нажать
             {
                 _gameTime += 1 * Time.deltaTime;
                 if (_gameTime >= 1)
@@ -69,55 +88,143 @@ namespace Game
                     _gameTime = 0;
                 }
 
-                switch (_random)
+                switch (_random)                                        //проверка на правильность нажатия клавиш...(я знаю что полное дерьмо, надо будет фиксить)
                 {
                     case 1:
-                        Up.gameObject.SetActive(true);
-                        if (_vertical > 0)
-                        {
-                            addScore(200);
+                        Up.gameObject.SetActive(true);                    //как же меня бесит то что я пишу в одном файле...но мне так удобно(ФИКСИ)
+                        if (Input.GetKeyDown("up"))
+                        {                                                 //В общем, тут суть в том что берется рандом и проверяется если нажато то что нужно,
+                            
+                            addScore(200);                                //тогда все окей, если что то не то нажато то гг
                             Up.gameObject.SetActive(false);
+                            ErrorAim.gameObject.SetActive(false);
+                            _howManyTrue += 1;
+                            _howManyFalse = 0;
                             StartGame();
+                        }
+                        if (Input.GetKeyDown("down"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
+                        }
+                        if (Input.GetKeyDown("left"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
+                        }
+                        if (Input.GetKeyDown("right"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
                         }
                         break;
                     case 2:
                         Down.gameObject.SetActive(true);
-                        if (_vertical < 0)
+                        if (Input.GetKeyDown("down"))
                         {
                             addScore(200);
                             Down.gameObject.SetActive(false);
+                            ErrorAim.gameObject.SetActive(false);
+                            _howManyTrue += 1;
+                            _howManyFalse = 0;
                             StartGame();
+                        }
+                        if (Input.GetKeyDown("up"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
+                        }
+                        if (Input.GetKeyDown("left"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
+                        }
+                        if (Input.GetKeyDown("right"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
                         }
                         break;
                     case 3:
                         Right.gameObject.SetActive(true);
-                        if (_horizontal > 0)
+                        if (Input.GetKeyDown("right"))
                         {
                             addScore(200);
                             Right.gameObject.SetActive(false);
+                            ErrorAim.gameObject.SetActive(false);
+                            _howManyTrue += 1;
+                            _howManyFalse = 0;
                             StartGame();
+                        }
+                        if (Input.GetKeyDown("down"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
+                        }
+                        if (Input.GetKeyDown("left"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
+                        }
+                        if (Input.GetKeyDown("up"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
                         }
                         break;
                     case 4:
                         Left.gameObject.SetActive(true);
-                        if (_horizontal < 0)
+                        if (Input.GetKeyDown("left"))
                         {
                             addScore(200);
                             Left.gameObject.SetActive(false);
+                            ErrorAim.gameObject.SetActive(false);
+                            _howManyTrue += 1;
+                            _howManyFalse = 0;
                             StartGame();
+                        }
+                        if (Input.GetKeyDown("down"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
+                        }
+                        if (Input.GetKeyDown("up"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
+                        }
+                        if (Input.GetKeyDown("right"))
+                        {
+                            _howManyFalse += 1;
+                            _howManyTrue = 0;
+                            TimeLeft = 0;
                         }
                         break;
                 }
-            }
+            }                                         //<----------- здесь конец проверки
 
             if (TimeLeft == 0)                        //Если закончилось время за которое нужно успеть нажать
             {
-                panel.gameObject.SetActive(true);
+                _howManyFalse += 1;
+                _howManyTrue = 0;
+                ErrorAim.gameObject.SetActive(true);
                 Up.gameObject.SetActive(false);
                 Down.gameObject.SetActive(false);
                 Left.gameObject.SetActive(false);
                 Right.gameObject.SetActive(false);
-                TimeLeft = -1;
+                StartGame();
+                
             }
         }
 
@@ -127,7 +234,7 @@ namespace Game
             TimeLeft = 2;
         }
         
-        public void addScore(int HowManyScore)
+        public void addScore(int HowManyScore) //Для мультипликатора написал метод в который можно указать сколько очков добавить
         {
             var scoreTag = GameObject.FindGameObjectsWithTag("Score"); 
             _score += HowManyScore;
@@ -135,11 +242,15 @@ namespace Game
             scoreText[0].text = "Score: " + _score;
         }
 
-        public void StartAgain()
+        public void StartAgain() // Инициализация если игрок начал заново
         {
+            _bonus = 1;
+            Bonus.text = "x" + _bonus;
+            ErrorAim.gameObject.SetActive(false);
             panel.gameObject.SetActive(false);
             Numbers.gameObject.SetActive(true);
             _score = 0;
+            addScore(0);
             Title.text = "Are you ready?";
             Title.transform.position = new Vector3(Title.transform.position.x - 1.85f,
                 Title.transform.position.y, Title.transform.position.z);
